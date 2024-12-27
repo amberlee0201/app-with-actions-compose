@@ -16,7 +16,7 @@ jobs:
           cache: maven
       - name: add application.properties
         run: |
-          echo ${{ secrets.APP_PROPERTIES }} >> src/main/resources/application.properties
+          echo "${{ secrets.APP_PROPERTIES }}" >> src/main/resources/application.properties
 
       - name: check app.prop
         run: cat src/main/resources/application.properties
