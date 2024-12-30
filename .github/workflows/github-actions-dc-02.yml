@@ -1,6 +1,6 @@
 name: App With Github Actions with Docker CI/CD
 on:
-  push
+  workflow_dispatch
 
 jobs:
   ci:
