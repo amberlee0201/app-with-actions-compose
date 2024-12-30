@@ -68,6 +68,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
+          strip_components: 5
           source: src/main/resources/static/sql/create-table.sql
           target: /home/ubuntu/data/sql
 
@@ -79,4 +80,4 @@ jobs:
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script_stop: true
           script: |
-            docker-compose -f /home/ubuntu/app/compose.yaml up
+            sudo docker-compose -f /home/ubuntu/app/compose.yaml up
