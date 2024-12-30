@@ -63,7 +63,6 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
-          script_stop: false
           script: |
             sudo docker-compose -f /home/ubuntu/app/compose-rds.yaml down
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/app-with-actions:latest
