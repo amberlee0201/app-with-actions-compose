@@ -63,6 +63,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
+          script_stop: false
           script: |
             sudo docker stop $(sudo docker ps -aq)
             sudo docker container prune -f
