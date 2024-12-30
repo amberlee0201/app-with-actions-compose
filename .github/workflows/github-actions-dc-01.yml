@@ -53,3 +53,30 @@ jobs:
           context: .
           push: true
           tags: ${{ vars.DOCKERHUB_USERNAME }}/app-with-actions:latest
+  cd:
+    needs: ci
+    runs-on: ubuntu-latest
+    steps:
+      # 1. 코드 체크아웃
+      - name: Checkout code
+        uses: actions/checkout@v4
+        # GitHub Actions는 기본적으로 현재 리포지토리를 실행 환경으로 복제합니다.
+
+      - name: copy create-table.sql
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          source: src/main/resources/static/sql/create-table.sql
+          target: /home/ubuntu/data/sql
+
+      - name: run docker compose
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          script_stop: true
+          script: |
+            docker-compose -f /home/ubuntu/app/compose.yaml up
