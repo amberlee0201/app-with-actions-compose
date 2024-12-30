@@ -1,6 +1,6 @@
 name: App With Github Actions with Docker CI/CD
 on:
-  workflow_dispatch
+  push
 
 jobs:
   ci:
@@ -57,29 +57,15 @@ jobs:
     needs: ci
     runs-on: ubuntu-latest
     steps:
-      # 1. 코드 체크아웃
-      - name: Checkout code
-        uses: actions/checkout@v4
-        # GitHub Actions는 기본적으로 현재 리포지토리를 실행 환경으로 복제합니다.
-
-      - name: copy create-table.sql
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_PRIVATE_KEY }}
-          strip_components: 5
-          source: src/main/resources/static/sql/create-table.sql
-          target: /home/ubuntu/data/sql
-
-      - name: run docker compose
+      - name: run web server on docker
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script: |
-            sudo docker-compose -f /home/ubuntu/app/compose.yaml down
+            sudo docker stop $(sudo docker ps -aq)
+            sudo docker container prune
+            sudo docker rmi $(sudo docker images -aq)
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/app-with-actions:latest
-            sudo docker-compose -f /home/ubuntu/app/compose.yaml up
-            sudo docker image prune -a -f
+            sudo docker run --name actions-server -p 8080:8080 -d ${{ secrets.DOCKERHUB_USERNAME }}/app-with-actions:latest
