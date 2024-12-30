@@ -80,4 +80,7 @@ jobs:
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script_stop: true
           script: |
+            sudo docker-compose down
+            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/app-with-actions:latest
             sudo docker-compose -f /home/ubuntu/app/compose.yaml up
+            sudo docker image prune -a -f
